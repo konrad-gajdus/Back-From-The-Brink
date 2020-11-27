@@ -63,10 +63,76 @@ public class gameBoard {
         player = null;
     }
 
+    boolean travel(int steps){
+        if(steps > 0){
+            while(steps != 0) {
+                //progressing to the next square (so the square they are starting from does not get counted)
+                currentPlayer.setCurrentSquare(squares.get(currentPlayer.getCurrentSquare().getSquareID() + 1));
+                steps--;
+                //checking the player passes go
+                if (currentPlayer.getCurrentSquare() == squares.get(0)) {
+                    System.out.println("You landed on the Starting Square, here is £200");
+                    //add money to the players current balance
+                    currentPlayer.setPlayerMoney(currentPlayer.getPlayerMoney() + 200);
+                }
+
+                //if()
+
+            }
+            return true;
+        }
+        else {
+            System.out.println("Could not travel.");
+            return false;
+        }
+    }
+
     //when player lands on this square
     //TODO >> fix loop for game squares
     boolean land(gameSquare square){
+
+        while (currentPlayer.getCurrentSquare().getSquareID() != square.getSquareID()){
+
+            if (currentPlayer.getCurrentSquare().getSquareID() == square.getSquareID() -1) {
+                System.out.println("--------------------------------------------------------------------------");
+                System.out.println("You landed on: ");
+                System.out.println(currentPlayer.getCurrentSquare().toString());
+                //checking if its free to buy
+                if (currentPlayer.getCurrentSquare().getSquareOwner() == null) {
+                    System.out.println("Would you like to buy this space for: £" + currentPlayer.getCurrentSquare().getSquarePrice() + "? ");
+                    String option = "";
+                    do {
+                        System.out.println("Please enter 'yes' or 'no' ");
+                        option = scanner.next();
+                    } while (!option.equals("yes") && !option.equals("no"));
+                    //updating ownership
+                    if (option.equals("yes")) {
+                        currentPlayer.getCurrentSquare().buySquare(currentPlayer);
+                    }
+                }
+                //when the square has an owner the current player must donate money
+                else {
+                    if (currentPlayer.getCurrentSquare().donateMoney(currentPlayer)) {
+                        System.out.println("Player: " + currentPlayer.getPlayerName() + " has bought square: " + currentPlayer.getCurrentSquare().getSquareID());
+                    } else {
+                        bankruptPlayer(currentPlayer);
+                    }
+
+                }
+
+            }
+            //if the player is on the last square on the board, make it loop instead of going past the limit
+            if(currentPlayer.getCurrentSquare().getSquareID() == maxSquares){
+            currentPlayer.setCurrentSquare(squares.get(0));
+            }
+            else{
+                currentPlayer.setCurrentSquare(squares.get(currentPlayer.getCurrentSquare().getSquareID()));
+            }
+
+        }
+
         //landing on every square till destination
+            /*
         for(int i = currentPlayer.getCurrentSquare().getSquareID(); i <= square.getSquareID(); i++){
             currentPlayer.setCurrentSquare(squares.get(i));
             //testing - prints all squares crossed for debugging
@@ -109,6 +175,8 @@ public class gameBoard {
                 return true;
             }
         }
+
+      */
 
         return false;
     }
